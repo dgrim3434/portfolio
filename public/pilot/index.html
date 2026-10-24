@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pilot | Dylan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="/" data-owner-name>Dylan</a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="/#pilots">Pilots</a>
+        <a href="/#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="pilot">
+    <a class="back" href="/#pilots">All pilots</a>
+    <p class="empty">Loading pilot…</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap"><span data-owner-name>Dylan</span>, <span data-year></span></div>
+  </footer>
+
+  <script src="/site.js"></script>
+  <script>
+    // Demo types in pilots.json:
+    //   "static" -> your own HTML demo in /public/demos/<id>/ (served by this site)
+    //   "iframe" -> an app hosted elsewhere (Hugging Face Space, Streamlit, another Worker)
+    //   "video"  -> a YouTube/Loom embed URL, or an .mp4 path
+    //   "none"   -> no demo yet
+    function demoBlock(demo, title) {
+      const d = demo || { type: "none" };
+      if (d.type === "none" || !d.url) {
+        return `<div class="demo"><p class="demo-none">Demo coming soon.</p></div>`;
+      }
+      if (d.type === "video" && /\.(mp4|webm)$/i.test(d.url)) {
+        return `<div class="demo"><video src="${esc(d.url)}" controls preload="metadata"></video></div>`;
+      }
+      const allow = d.type === "video" ? ` allow="fullscreen; picture-in-picture"` : "";
+      return `<div class="demo"><iframe src="${esc(d.url)}" title="${esc(title)} demo" loading="lazy"${allow}></iframe></div>`;
+    }
+
+    (async () => {
+      const root = document.getElementById("pilot");
+      try {
+        const { owner, pilots } = await loadData();
+        renderChrome(owner);
+        const id = new URLSearchParams(location.search).get("id");
+        const p = pilots.find((x) => x.id === id);
+        if (!p) {
+          root.innerHTML = `<a class="back" href="/#pilots">All pilots</a>
+            <p class="empty">No pilot with the id "${esc(id)}". Check the id in data/pilots.json.</p>`;
+          return;
+        }
+        document.title = `${p.title} | ${owner.name}`;
+
+        const actions = [];
+        if (p.demo && p.demo.url) actions.push(`<a href="${esc(p.demo.url)}" target="_blank" rel="noopener">Open demo in a new tab</a>`);
+        if (p.repo) actions.push(`<a href="${esc(p.repo)}" rel="noopener">View code on GitHub</a>`);
+
+        const stack = (p.stack || []).length
+          ? `<section class="detail"><h2>Stack</h2><ul class="stack">${p.stack.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></section>` : "";
+        const writeup = p.writeup
+          ? `<section class="detail"><h2>How it works</h2><p>${esc(p.writeup)}</p></section>` : "";
+
+        root.innerHTML = `
+          <a class="back" href="/#pilots">All pilots</a>
+          <h1 class="pilot-title">${esc(p.title)}</h1>
+          <div class="pilot-meta">${statusTag(p.status)}<span>${esc(p.domain)}</span></div>
+          ${demoBlock(p.demo, p.title)}
+          <div class="demo-actions">${actions.join("")}</div>
+          <div class="facts">
+            <section><h2>Problem</h2><p>${esc(p.problem)}</p></section>
+            <section><h2>What I built</h2><p>${esc(p.built) || "In progress."}</p></section>
+            <section><h2>Result</h2>${p.metric ? `<div class="metric">${esc(p.metric)}</div>` : ""}<p>${esc(p.result) || "Not measured yet."}</p></section>
+          </div>
+          ${stack}${writeup}
+          <div style="height:72px"></div>`;
+      } catch (err) {
+        root.innerHTML = `<p class="empty">${esc(err.message)}</p>`;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dylan | AI pilots</title>
+  <meta name="description" content="AI pilots built end to end: real business problems, working systems, measured results.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="/" data-owner-name>Dylan</a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="#pilots">Pilots</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="thesis">
+      <h1 id="headline">I build AI pilots the way a forward deployed engineer would.</h1>
+    </section>
+
+    <section class="board" id="pilots" aria-labelledby="pilots-heading">
+      <div class="board-head">
+        <h2 id="pilots-heading">Pilots</h2>
+        <span class="board-count" id="pilot-count"></span>
+      </div>
+      <div id="pilot-list"></div>
+    </section>
+
+    <section class="about" id="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">About</h2>
+      <div>
+        <p id="about-text"></p>
+        <div class="links" data-contact></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap"><span data-owner-name>Dylan</span>, <span data-year></span></div>
+  </footer>
+
+  <script src="/site.js"></script>
+  <script>
+    (async () => {
+      const list = document.getElementById("pilot-list");
+      try {
+        const { owner, pilots } = await loadData();
+        renderChrome(owner);
+        document.getElementById("headline").textContent = owner.headline;
+        document.getElementById("about-text").textContent = owner.about;
+
+        const live = pilots.filter((p) => p.status === "live").length;
+        document.getElementById("pilot-count").textContent =
+          `${pilots.length} total, ${live} live`;
+
+        if (!pilots.length) {
+          list.innerHTML = `<p class="empty">No pilots yet. Add one to data/pilots.json and push to GitHub.</p>`;
+          return;
+        }
+
+        list.innerHTML = pilots.map((p, i) => {
+          const clickable = p.status !== "planned";
+          const tag = clickable ? "a" : "div";
+          const href = clickable ? ` href="/pilot/?id=${encodeURIComponent(p.id)}"` : "";
+          return `<${tag} class="board-row"${href} style="--i:${i}">
+            ${statusTag(p.status)}
+            <span class="row-main"><span class="row-title">${esc(p.title)}</span>
+              <span class="row-domain">${esc(p.domain)}</span></span>
+            <span class="row-problem">${esc(p.problem)}</span>
+            <span class="row-metric">${esc(p.metric)}</span>
+          </${tag}>`;
+        }).join("");
+      } catch (err) {
+        list.innerHTML = `<p class="empty">${esc(err.message)} If you opened this file directly, run a local server instead (see README).</p>`;
+      }
+    })();
+  </script>
+</body>
+</html>

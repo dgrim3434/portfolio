@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticket triage demo</title>
+<style>
+  :root { --bg:#FFFFFF; --ink:#14202B; --muted:#4A5866; --rule:#C9D1D9; --live:#1F7A55; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#18232D; --ink:#E6ECF1; --muted:#9AA8B5; --rule:#2C3A47; --live:#4FBF8E; } }
+  body { margin:0; padding:28px; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  textarea { width:100%; box-sizing:border-box; min-height:110px; padding:12px; font:inherit; color:inherit; background:transparent; border:1px solid var(--rule); border-radius:6px; }
+  button { margin-top:12px; padding:10px 18px; font:inherit; font-weight:600; border:0; border-radius:6px; background:var(--ink); color:var(--bg); cursor:pointer; }
+  #out { margin-top:20px; padding-top:16px; border-top:1px solid var(--rule); }
+  .q { color:var(--live); font-weight:600; }
+  p { color:var(--muted); margin:0 0 12px; }
+</style>
+</head>
+<body>
+  <p>Paste a support ticket. This placeholder uses keyword rules; swap in your real model or an API call.</p>
+  <textarea id="t">I was charged twice for my subscription this month and need a refund.</textarea>
+  <button id="go">Route ticket</button>
+  <div id="out"></div>
+<script>
+  const rules = [["Billing", /charge|refund|invoice|payment|bill/i], ["Account access", /password|login|locked|sign in/i], ["Bug report", /error|crash|broken|bug/i]];
+  document.getElementById("go").onclick = () => {
+    const text = document.getElementById("t").value;
+    const hit = rules.find(([, re]) => re.test(text));
+    const queue = hit ? hit[0] : "General";
+    document.getElementById("out").innerHTML = `Routed to <span class="q">${queue}</span>`;
+  };
+</script>
+</body>
+</html>

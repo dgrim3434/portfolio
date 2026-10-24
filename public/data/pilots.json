@@ -1,0 +1,41 @@
+{
+  "owner": {
+    "name": "Dylan",
+    "headline": "I build AI pilots the way a forward deployed engineer would: start from a real business problem, ship a working system, and measure what changed.",
+    "about": "CS graduate from Virginia Tech. Previously a data science contractor on Kenvue's Consumer Business Intelligence team, building Amazon marketplace optimization models. Now working full time toward forward deployed engineering, one pilot at a time.",
+    "email": "you@example.com",
+    "github": "https://github.com/your-username",
+    "linkedin": "https://www.linkedin.com/in/your-profile",
+    "resume": ""
+  },
+  "pilots": [
+    {
+      "id": "example-demo",
+      "title": "Example pilot: support ticket triage",
+      "status": "live",
+      "domain": "Customer support",
+      "problem": "Agents spend the first minutes of every ticket figuring out where it should go.",
+      "built": "A classifier that reads the ticket, picks a queue, and drafts a first reply for the agent to edit.",
+      "result": "Replace with your measured result",
+      "metric": "Your number",
+      "stack": ["Python", "FastAPI", "Claude API", "Cloudflare Workers"],
+      "demo": { "type": "static", "url": "/demos/example-demo/" },
+      "repo": "https://github.com/your-username/example-demo",
+      "writeup": "Replace this with your architecture notes: how the pieces fit together, the tradeoffs you made, and what you would change for a production rollout."
+    },
+    {
+      "id": "next-pilot",
+      "title": "Next pilot",
+      "status": "planned",
+      "domain": "Your next client problem",
+      "problem": "One sentence on the business problem this pilot will solve.",
+      "built": "",
+      "result": "",
+      "metric": "",
+      "stack": [],
+      "demo": { "type": "none" },
+      "repo": "",
+      "writeup": ""
+    }
+  ]
+}
